@@ -13,8 +13,7 @@ class SavedTournament {
     var blindLevels: [BlindLevel]
     var colorUpLevels: [Int]
     
-    init(name: String, players: Int, totalMinutes: Int, initialStack: Int,
-         startingSmallBlind: Int, blindLevels: [BlindLevel], colorUpLevels: [Int]) {
+    init(name: String, players: Int, totalMinutes: Int, initialStack: Int, startingSmallBlind: Int, blindLevels: [BlindLevel], colorUpLevels: [Int]) {
         self.id = UUID()
         self.name = name
         self.dateCreated = Date()

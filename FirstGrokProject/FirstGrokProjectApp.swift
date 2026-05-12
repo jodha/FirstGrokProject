@@ -5,7 +5,7 @@ import SwiftData
 struct FirstGrokProjectApp: App {
     var body: some Scene {
         WindowGroup {
-            HomeView()
+            ContentView()
         }
         .modelContainer(for: SavedTournament.self)
     }
