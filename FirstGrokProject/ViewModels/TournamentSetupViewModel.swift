@@ -1,11 +1,3 @@
-//
-//  TournamentSetupViewModel.swift
-//  FirstGrokProject
-//
-//  Created by Urvashi Bhardwaj on 5/12/26.
-//
-
-
 import Foundation
 import Observation
 
@@ -20,37 +12,68 @@ class TournamentSetupViewModel {
     ]
     
     var players: Int = 9
-    var totalMinutes: Int = 180   // 3 hours default
+    var totalMinutes: Int = 180
     
-    var calculatedInitialStack: Int = 1500
+    var recommendedStack: [ChipDenomination] = []
+    var totalStackValue: Int = 0
     var blindLevels: [BlindLevel] = []
     var colorUpLevels: [Int] = []
     
+    init() {
+        calculateTournament()
+    }
+    
     func calculateTournament() {
-        let totalChipsValue = chipDenominations.reduce(0) { $0 + $1.value * $1.count }
-        calculatedInitialStack = max(1000, totalChipsValue / max(1, players))
-        
+        recommendedStack = calculateChipDistribution()
+        totalStackValue = recommendedStack.reduce(0) { $0 + $1.value * $1.count }
         generateBlindStructure()
+    }
+    
+    private func calculateChipDistribution() -> [ChipDenomination] {
+        var distribution: [ChipDenomination] = []
+        
+        for denom in chipDenominations where denom.count > 0 {
+            // Distribute fairly
+            let chipsPerPlayer = max(2, denom.count / players)
+            if chipsPerPlayer > 0 {
+                distribution.append(ChipDenomination(
+                    value: denom.value,
+                    count: chipsPerPlayer
+                ))
+            }
+        }
+        
+        // Minimum reasonable stack fallback
+        if distribution.isEmpty || totalStackValue < 5000 {
+            distribution = [
+                ChipDenomination(value: 25, count: 8),
+                ChipDenomination(value: 100, count: 12),
+                ChipDenomination(value: 500, count: 8),
+                ChipDenomination(value: 1000, count: 5)
+            ]
+        }
+        
+        return distribution
     }
     
     private func generateBlindStructure() {
         blindLevels.removeAll()
         colorUpLevels.removeAll()
         
-        let numLevels = max(10, totalMinutes / 18)           // ~18 min per level
+        let numLevels = max(10, totalMinutes / 20)
         let levelDuration = totalMinutes / numLevels
         
-        var smallBlind = max(25, calculatedInitialStack / 50)
+        var smallBlind = max(25, totalStackValue / 60)
         smallBlind = roundToNice(smallBlind)
         
         for level in 1...numLevels {
             let bigBlind = smallBlind * 2
-            
             var colorUpNote: String? = nil
+            
             if level >= 5 && level % 4 == 1 {
                 colorUpNote = "Color-up: Remove 25s"
                 colorUpLevels.append(level)
-            } else if level >= 8 && level % 5 == 0 {
+            } else if level >= 9 && level % 5 == 0 {
                 colorUpNote = "Color-up: Remove 100s"
                 colorUpLevels.append(level)
             }
@@ -66,8 +89,7 @@ class TournamentSetupViewModel {
                 colorUpNote: colorUpNote
             ))
             
-            // Increase blinds for next level
-            smallBlind = Int(Double(smallBlind) * 1.6)
+            smallBlind = Int(Double(smallBlind) * 1.65)
             smallBlind = roundToNice(smallBlind)
         }
     }

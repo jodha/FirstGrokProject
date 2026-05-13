@@ -1,5 +1,5 @@
 import SwiftUI
-import SwiftData     // ← Add this line
+import SwiftData
 
 struct TournamentSetupView: View {
     @Bindable var viewModel: TournamentSetupViewModel
@@ -11,7 +11,9 @@ struct TournamentSetupView: View {
             Form {
                 Section("Tournament Settings") {
                     Picker("Number of Players", selection: $viewModel.players) {
-                        ForEach([6, 8, 9, 10, 12], id: \.self) { Text("\($0) players").tag($0) }
+                        ForEach([6, 8, 9, 10, 12], id: \.self) {
+                            Text("\($0) players").tag($0)
+                        }
                     }
                     
                     Picker("Tournament Duration", selection: $viewModel.totalMinutes) {
@@ -22,21 +24,33 @@ struct TournamentSetupView: View {
                     }
                 }
                 
-                Section("Chip Denominations") {
-                    ForEach($viewModel.chipDenominations) { $denom in
+                Section("Your Available Chips") {
+                    ForEach(viewModel.chipDenominations.indices, id: \.self) { index in
                         HStack {
-                            Text("\(denom.value)")
+                            Text("$\(viewModel.chipDenominations[index].value)")
+                                .font(.title3)
                             Spacer()
-                            Stepper("\(denom.count)", value: $denom.count, in: 0...100)
+                            Stepper("\(viewModel.chipDenominations[index].count)",
+                                   value: $viewModel.chipDenominations[index].count,
+                                   in: 0...100)
                         }
                     }
                 }
                 
-                Section("Results") {
-                    Text("Recommended Starting Stack")
+                Section("Recommended Starting Stack per Player") {
+                    Text("Total Value: $\(viewModel.totalStackValue)")
                         .font(.headline)
-                    Text("\(viewModel.calculatedInitialStack)")
-                        .font(.system(size: 42, weight: .bold))
+                    
+                    ForEach(viewModel.recommendedStack) { chip in
+                        HStack {
+                            Text("$\(chip.value)")
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Text("\(chip.count) chips")
+                                .font(.title3)
+                        }
+                    }
                 }
             }
             .navigationTitle("New Tournament")
@@ -45,13 +59,22 @@ struct TournamentSetupView: View {
                     Button("Cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Start") {
+                    Button("Start Tournament") {
                         startTournament()
                     }
                     .font(.headline)
                 }
             }
             .onAppear {
+                viewModel.calculateTournament()
+            }
+            .onChange(of: viewModel.players) { _ in
+                viewModel.calculateTournament()
+            }
+            .onChange(of: viewModel.totalMinutes) { _ in
+                viewModel.calculateTournament()
+            }
+            .onChange(of: viewModel.chipDenominations) { _ in
                 viewModel.calculateTournament()
             }
         }
@@ -62,7 +85,7 @@ struct TournamentSetupView: View {
             name: "Tournament \(Date.now.formatted(date: .abbreviated, time: .shortened))",
             players: viewModel.players,
             totalMinutes: viewModel.totalMinutes,
-            initialStack: viewModel.calculatedInitialStack,
+            initialStack: viewModel.totalStackValue,
             startingSmallBlind: viewModel.blindLevels.first?.smallBlind ?? 25,
             blindLevels: viewModel.blindLevels,
             colorUpLevels: viewModel.colorUpLevels

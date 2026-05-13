@@ -11,14 +11,18 @@ import SwiftUI
 struct LiveTournamentView: View {
     let tournament: SavedTournament
     @State private var currentLevel = 1
-    @State private var timeRemaining: Int
+    @State private var timeRemaining: Int = 0
     @State private var isRunning = false
     @State private var timer: Timer?
     
     init(tournament: SavedTournament) {
         self.tournament = tournament
-        self._timeRemaining = State(initialValue: tournament.blindLevels.first?.durationMinutes ?? 20 * 60)
+        // Fixed: Use full minutes * 60
+        let firstLevelDuration = tournament.blindLevels.first?.durationMinutes ?? 20
+        self._timeRemaining = State(initialValue: firstLevelDuration * 60)
     }
+    
+    // ... rest of the view stays the same
     
     var body: some View {
         VStack(spacing: 24) {
