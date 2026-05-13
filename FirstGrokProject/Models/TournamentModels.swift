@@ -13,12 +13,9 @@ class SavedTournament {
     var blindLevels: [BlindLevel]
     var colorUpLevels: [Int]
     
-<<<<<<< HEAD
-    init(name: String, players: Int, totalMinutes: Int, initialStack: Int, startingSmallBlind: Int, blindLevels: [BlindLevel], colorUpLevels: [Int]) {
-=======
+
     init(name: String, players: Int, totalMinutes: Int, initialStack: Int,
          startingSmallBlind: Int, blindLevels: [BlindLevel], colorUpLevels: [Int]) {
->>>>>>> 36bef8d (Initial Commit)
         self.id = UUID()
         self.name = name
         self.dateCreated = Date()
@@ -45,8 +42,5 @@ struct ChipDenomination: Identifiable, Codable, Hashable {
     var id = UUID()
     var value: Int
     var count: Int
-<<<<<<< HEAD
+
 }
-=======
-}
->>>>>>> 36bef8d (Initial Commit)
