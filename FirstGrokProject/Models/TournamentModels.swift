@@ -13,9 +13,22 @@ class SavedTournament {
     var blindLevels: [BlindLevel]
     var colorUpLevels: [Int]
     
+    // New: Store the recommended starting chip breakdown per player
+    var startingChipBreakdown: [ChipDenomination]
+    
+    // New: Store the original chip inventory the user entered
+    var originalChipInventory: [ChipDenomination]
 
-    init(name: String, players: Int, totalMinutes: Int, initialStack: Int,
-         startingSmallBlind: Int, blindLevels: [BlindLevel], colorUpLevels: [Int]) {
+    init(name: String, 
+         players: Int, 
+         totalMinutes: Int, 
+         initialStack: Int,
+         startingSmallBlind: Int, 
+         blindLevels: [BlindLevel], 
+         colorUpLevels: [Int],
+         startingChipBreakdown: [ChipDenomination] = [],
+         originalChipInventory: [ChipDenomination] = []) {
+        
         self.id = UUID()
         self.name = name
         self.dateCreated = Date()
@@ -25,6 +38,8 @@ class SavedTournament {
         self.startingSmallBlind = startingSmallBlind
         self.blindLevels = blindLevels
         self.colorUpLevels = colorUpLevels
+        self.startingChipBreakdown = startingChipBreakdown
+        self.originalChipInventory = originalChipInventory
     }
 }
 
