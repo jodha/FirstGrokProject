@@ -3,6 +3,7 @@ import SwiftUI
 struct LiveTournamentView: View {
     let tournament: SavedTournament
     @State private var timerModel: LiveTournamentTimerModel
+    @State private var showStartingStack = false
 
     init(tournament: SavedTournament) {
         self.tournament = tournament
@@ -15,6 +16,10 @@ struct LiveTournamentView: View {
             BlindTimerDisplayView(timerModel: timerModel)
             nextLevelButton
             colorUpAlert
+            
+            // NEW: Expandable Starting Stack Section
+            startingStackSection
+            
             upcomingBlindsList
         }
         .navigationTitle(tournament.name)
@@ -46,6 +51,54 @@ struct LiveTournamentView: View {
                 .background(Color.orange.opacity(0.1))
                 .cornerRadius(12)
         }
+    }
+
+    // NEW: Expandable Starting Chip Stack
+    private var startingStackSection: some View {
+        DisclosureGroup(isExpanded: $showStartingStack) {
+            if !tournament.startingChipBreakdown.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    ForEach(tournament.startingChipBreakdown) { chip in
+                        HStack {
+                            Text("$\(chip.value)")
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Text("\(chip.count) chips")
+                                .font(.title3)
+                        }
+                        .padding(.horizontal)
+                    }
+                    
+                    Divider()
+                    
+                    HStack {
+                        Text("Total Starting Stack")
+                            .font(.headline)
+                        Spacer()
+                        Text("$\(tournament.initialStack)")
+                            .font(.headline)
+                            .fontWeight(.bold)
+                    }
+                    .padding(.horizontal)
+                }
+                .padding(.vertical, 8)
+            } else {
+                Text("Starting stack details not available for this tournament.")
+                    .foregroundStyle(.secondary)
+                    .padding()
+            }
+        } label: {
+            HStack {
+                Image(systemName: "list.bullet")
+                Text("Starting Chip Stack (per player)")
+                    .font(.headline)
+                Spacer()
+                Image(systemName: showStartingStack ? "chevron.up" : "chevron.down")
+            }
+            .foregroundStyle(.primary)
+        }
+        .padding(.horizontal)
     }
 
     private var upcomingBlindsList: some View {
