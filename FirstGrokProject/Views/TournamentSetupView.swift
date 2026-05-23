@@ -63,7 +63,9 @@ struct TournamentSetupView: View {
             initialStack: viewModel.totalStackValue,
             startingSmallBlind: viewModel.blindLevels.first?.smallBlind ?? 25,
             blindLevels: viewModel.blindLevels,
-            colorUpLevels: viewModel.colorUpLevels
+            colorUpLevels: viewModel.colorUpLevels,
+            startingChipBreakdown: viewModel.recommendedStack,
+            originalChipInventory: viewModel.chipDenominations
         )
         modelContext.insert(newTournament)
         dismiss()
