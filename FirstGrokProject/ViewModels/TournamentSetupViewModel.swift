@@ -19,7 +19,21 @@ class TournamentSetupViewModel {
     var blindLevels: [BlindLevel] = []
     var colorUpLevels: [Int] = []
 
+    // Normal init (new tournament)
     init() {
+        calculateTournament()
+    }
+
+    // NEW: Reuse init from saved tournament
+    init(from tournament: SavedTournament) {
+        self.players = tournament.players
+        self.totalMinutes = tournament.totalMinutes
+        
+        // Load original chip inventory if available, otherwise use defaults
+        if !tournament.originalChipInventory.isEmpty {
+            self.chipDenominations = tournament.originalChipInventory
+        }
+        
         calculateTournament()
     }
 
