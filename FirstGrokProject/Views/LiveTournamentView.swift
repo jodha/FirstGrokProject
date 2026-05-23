@@ -11,16 +11,38 @@ struct LiveTournamentView: View {
     }
 
     var body: some View {
-        VStack(spacing: 24) {
-            levelHeader
-            BlindTimerDisplayView(timerModel: timerModel)
-            nextLevelButton
-            colorUpAlert
+        ZStack {
+            // Green Felt Background
+            Image("GreenFelt")
+                .resizable()
+                .ignoresSafeArea()
+                .scaledToFill()
+                .opacity(0.9)
             
-            // NEW: Expandable Starting Stack Section
-            startingStackSection
-            
-            upcomingBlindsList
+            VStack(spacing: 20) {
+                levelHeader
+                
+                // Dealer Button
+                Image("DealerButton")
+                    .resizable()
+                    .frame(width: 60, height: 60)
+                    .shadow(radius: 4)
+                
+                BlindTimerDisplayView(timerModel: timerModel)
+                nextLevelButton
+                colorUpAlert
+                
+                // Chip Stack Image
+                Image("ChipStack")
+                    .resizable()
+                    .frame(height: 80)
+                    .cornerRadius(12)
+                    .shadow(radius: 3)
+                
+                startingStackSection
+                upcomingBlindsList
+            }
+            .padding(.horizontal)
         }
         .navigationTitle(tournament.name)
         .navigationBarTitleDisplayMode(.inline)
@@ -36,7 +58,7 @@ struct LiveTournamentView: View {
 
     private var nextLevelButton: some View {
         Button("Next Level") { timerModel.advanceLevel() }
-            .buttonStyle(.bordered)
+            .buttonStyle(.borderedProminent)
             .controlSize(.large)
             .disabled(!timerModel.canAdvanceLevel())
     }
@@ -48,12 +70,11 @@ struct LiveTournamentView: View {
                 .foregroundStyle(.orange)
                 .font(.headline)
                 .padding()
-                .background(Color.orange.opacity(0.1))
+                .background(Color.black.opacity(0.6))
                 .cornerRadius(12)
         }
     }
 
-    // NEW: Expandable Starting Chip Stack
     private var startingStackSection: some View {
         DisclosureGroup(isExpanded: $showStartingStack) {
             if !tournament.startingChipBreakdown.isEmpty {
@@ -63,28 +84,32 @@ struct LiveTournamentView: View {
                             Text("$\(chip.value)")
                                 .font(.title3)
                                 .fontWeight(.semibold)
+                                .foregroundStyle(.white)
                             Spacer()
                             Text("\(chip.count) chips")
                                 .font(.title3)
+                                .foregroundStyle(.white)
                         }
                         .padding(.horizontal)
                     }
                     
-                    Divider()
+                    Divider().background(Color.white.opacity(0.3))
                     
                     HStack {
                         Text("Total Starting Stack")
                             .font(.headline)
+                            .foregroundStyle(.white)
                         Spacer()
                         Text("$\(tournament.initialStack)")
                             .font(.headline)
                             .fontWeight(.bold)
+                            .foregroundStyle(.white)
                     }
                     .padding(.horizontal)
                 }
                 .padding(.vertical, 8)
             } else {
-                Text("Starting stack details not available for this tournament.")
+                Text("Starting stack details not available.")
                     .foregroundStyle(.secondary)
                     .padding()
             }
@@ -96,9 +121,11 @@ struct LiveTournamentView: View {
                 Spacer()
                 Image(systemName: showStartingStack ? "chevron.up" : "chevron.down")
             }
-            .foregroundStyle(.primary)
+            .foregroundStyle(.white)
         }
         .padding(.horizontal)
+        .background(Color.black.opacity(0.4))
+        .cornerRadius(12)
     }
 
     private var upcomingBlindsList: some View {
@@ -107,13 +134,16 @@ struct LiveTournamentView: View {
                 ForEach(upcomingLevels) { level in
                     HStack {
                         Text("Level \(level.level)")
+                            .foregroundStyle(.white)
                         Spacer()
                         Text("\(level.smallBlind) / \(level.bigBlind)")
+                            .foregroundStyle(.white.opacity(0.8))
                     }
-                    .foregroundStyle(level.isBreak ? .blue : .primary)
+                    .listRowBackground(Color.black.opacity(0.3))
                 }
             }
         }
+        .scrollContentBackground(.hidden)
     }
 
     private var currentBlindLevel: BlindLevel? {
